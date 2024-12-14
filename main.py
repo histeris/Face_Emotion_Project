@@ -44,10 +44,16 @@ def preprocess_and_predict_lbp(image_path, model, scaler):
     # image = cv2.imread(image_path)
     if image_path is None:
         raise ValueError(f"Gambar tidak ditemukan atau tidak valid.")
-    
+    haar_cascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
+    face = haar_cascade.detectMultiScale(image_path, 1.2, 5)
+    if len(face) < 1:
+        cropped_img = image_path
+    for face_rect in face:
+        x,y,h,w = face_rect
+        cropped_img = image_path[y:y+h, x:x+w]
     # Preprocessing
     input_size = (64, 64)
-    resized_image = cv2.resize(image_path, input_size)
+    resized_image = cv2.resize(cropped_img, input_size)
     gray_image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2RGB)
     blurred_image = cv2.GaussianBlur(gray_image, (5, 5), 0)
     
@@ -68,7 +74,16 @@ def preprocess_and_predict_hog(image_path, model, scaler, hog_params):
     # image = cv2.imread(image_path)
     if image_path is None:
         raise ValueError(f"Gambar di {image_path} tidak ditemukan atau tidak valid.")
-    
+    haar_cascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
+    face = haar_cascade.detectMultiScale(image_path, 1.2, 5)
+    if len(face) < 1:
+        cropped_img = image_path
+    for face_rect in face:
+        x,y,h,w = face_rect
+        cropped_img = image_path[y:y+h, x:x+w]
+    # Preprocessing
+    input_size = (64, 64)
+    resized_image = cv2.resize(cropped_img, input_size)
     # Preprocessing
     input_size = (64, 64)
     resized_image = cv2.resize(image_path, input_size)
